@@ -1,4 +1,3 @@
 .env
-export_parquet/
 backend/__pycache__
 config.yaml
