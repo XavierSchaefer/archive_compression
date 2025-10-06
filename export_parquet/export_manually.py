@@ -16,15 +16,14 @@ from backend.read_env import MYSQL_USER,MYSQL_PASSWORD,MYSQL_HOST,MYSQL_PORT
 from backend.read_settings import settings_dict
 
 # ==== User inputs ====  
-MYSQL_DB   = "LOG"
-TABLE      = "cache_logs"
+MYSQL_DB   = "rhf"
+TABLE      = "esh_timesignals"
+
 
 # Dossier de sortie Parquet (sera créé si absent)
 OUTPUT_DIR = Path(settings_dict['path_to_export']) / str(round(dt.datetime.timestamp(dt.datetime.now()))) /f"{MYSQL_DB}.{TABLE}"
-CHUNK_SIZE = 100  # lignes par lot (ajustez selon RAM)
+CHUNK_SIZE = 200  # lignes par lot (ajustez selon RAM)
 # ==============================
-
-
 
 def mysql_count_rows():
     c.execute(f"SELECT COUNT(*) FROM `{TABLE}`")
@@ -77,9 +76,9 @@ if __name__ == "__main__":
     
     print(f"- Lignes MySQL avant export : {mysql_rows}")
 
-    print(f"Export vers {OUTPUT_DIR}…")
+    print(f"Export vers {OUTPUT_DIR}…", dt.datetime.now())
     written_rows = export_to_parquet()
-    print(f"- Lignes écrites en Parquet : {written_rows}")
+    print(f"- Lignes écrites en Parquet : {written_rows}", dt.datetime.now())
 
     print("Vérification du compte côté Parquet…")
     pq_rows = parquet_count_rows()
