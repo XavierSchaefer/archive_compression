@@ -16,15 +16,13 @@ from backend.read_env import MYSQL_USER,MYSQL_PASSWORD,MYSQL_HOST,MYSQL_PORT
 from backend.read_settings import settings_dict
 
 # ==== User inputs ====  
-MYSQL_DB   = "rhf"
-TABLE      = "esh_timesignals"
 MYSQL_DB   = "css"
-TABLE      = "tableau des résultats nvh"
+TABLE      = "kpi_data"
 
 
 # Dossier de sortie Parquet (sera créé si absent)
 OUTPUT_DIR = Path(settings_dict['path_to_export']) / str(round(dt.datetime.timestamp(dt.datetime.now()))) /f"{MYSQL_DB}.{TABLE}"
-CHUNK_SIZE = 200  # lignes par lot (ajustez selon RAM)
+CHUNK_SIZE = 100000  # lignes par lot (ajustez selon RAM)
 # ==============================
 
 def mysql_count_rows():
@@ -61,8 +59,6 @@ def parquet_count_rows() -> int:
     # Compte rapide sans tout charger
     return sum(fragment.count_rows() for fragment in dataset.get_fragments())
 
-def truncate_table():
-    c.execute(f"TRUNCATE TABLE `{TABLE}`")
 
 if __name__ == "__main__":
     DB = mysql.connector.connect(
@@ -92,6 +88,3 @@ if __name__ == "__main__":
             "Abandon du truncate pour sécurité."
         )
     
-    print("Les comptes correspondent. Tronquage de la table")
-    truncate_table()
-    print("Finished Job")
